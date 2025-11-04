@@ -153,7 +153,7 @@ while True:
     screen.blit(buttonText, buttonRect)
 
     # Display text
-    text = "Lost" if lost else "Won" if game.mines == flags else ""
+    text = " You Lost ;(" if lost else "You Won ^_^" if game.mines == flags else ""
     text = mediumFont.render(text, True, WHITE)
     textRect = text.get_rect()
     textRect.center = ((5 / 6) * width, (2 / 3) * height)
