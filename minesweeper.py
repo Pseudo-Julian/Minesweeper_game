@@ -163,21 +163,39 @@ class MinesweeperAI():
             sentence.mark_safe(cell)
 
     def add_knowledge(self, cell, count):
-        """
-        Called when the Minesweeper board tells us, for a given
-        safe cell, how many neighboring cells have mines in them.
+        self.moves_made.add(cell)
+        self.mark_safe(cell)
 
-        This function should:
-            1) mark the cell as a move that has been made
-            2) mark the cell as safe
-            3) add a new sentence to the AI's knowledge base
-               based on the value of `cell` and `count`
-            4) mark any additional cells as safe or as mines
-               if it can be concluded based on the AI's knowledge base
-            5) add any new sentences to the AI's knowledge base
-               if they can be inferred from existing knowledge
-        """
-        raise NotImplementedError
+        new_set = set()
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+                if 0 <= i < self.width and 0 <= j < self.height:
+                    if (i, j) not in self.moves_made and (i, j) not in self.safes and (i, j) not in self.mines:
+                        new_set.add((i, j))
+        if len(new_set) != 0:
+            self.knowledge.append(Sentence(new_set, count))
+
+        for sentence in self.knowledge:
+            skm = sentence.known_mines()
+            sks = sentence.known_safes()
+            if len(skm) > 0:
+                for coord in skm:
+                    self.mark_mine(coord)
+            if len(sks) > 0:
+                for coord in sks:
+                    self.mark_safe(coord)
+
+        new_sentence = []
+        for s1 in self.knowledge:
+            for s2 in self.knowledge:
+                if s2 != s1 and s2.cells <= s1.cells:
+                    new_cells = s1.cells - s2.cells
+                    new_count = s1.count - s2.count
+                    new_sentence.append(Sentence(new_cells, new_count))
+        if len(new_sentence) != 0:
+            for sentence in new_sentence:
+                if len(sentence.cells) > 0 and sentence not in self.knowledge:
+                    self.knowledge.append(sentence)
 
     def make_safe_move(self):
         """
