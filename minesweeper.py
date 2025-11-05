@@ -198,21 +198,16 @@ class MinesweeperAI():
                     self.knowledge.append(sentence)
 
     def make_safe_move(self):
-        """
-        Returns a safe cell to choose on the Minesweeper board.
-        The move must be known to be safe, and not already a move
-        that has been made.
-
-        This function may use the knowledge in self.mines, self.safes
-        and self.moves_made, but should not modify any of those values.
-        """
-        raise NotImplementedError
+        possible_moves = [coord for coord in self.safes if coord not in self.moves_made]
+        return random.choice(possible_moves) if possible_moves else None
 
     def make_random_move(self):
-        """
-        Returns a move to make on the Minesweeper board.
-        Should choose randomly among cells that:
-            1) have not already been chosen, and
-            2) are not known to be mines
-        """
-        raise NotImplementedError
+        possible_random_moves = []
+        for i in range(0, self.width):
+            for j in range(0, self.height):
+                if (i, j) not in self.moves_made and (i, j) not in self.mines:
+                    possible_random_moves.append((i, j))
+        return random.choice(possible_random_moves) if possible_random_moves else None
+
+
+
